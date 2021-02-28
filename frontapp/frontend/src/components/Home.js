@@ -15,12 +15,17 @@ function Home(props) {
     setIndex(selectedIndex);
   };
 
-  async function fetchNews() {
+  async function fetchHomeNews() {
     const req = await axios.get("home-news-list/");
     setNews(req.data);
   }
 
-  useEffect(() => fetchNews(), []);
+  const loader = () => {
+    props.showLoader();
+    fetchHomeNews().then(() => props.hideLoader());
+  };
+
+  useEffect(() => loader(), []);
 
   return (
     <div>
@@ -28,30 +33,31 @@ function Home(props) {
         <Carousel.Item className="home-slides">
           <img className="d-block w-100" src={image1} alt="First slide" />
           <Carousel.Caption>
-            <h3>First slide label</h3>
-            <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
+            <h3>Работаем мы - зарабатываете Вы!</h3>
+            <p>Воспользуйтесь нашими потрясающими услугами</p>
           </Carousel.Caption>
         </Carousel.Item>
         <Carousel.Item className="home-slides">
-          <img className="d-block w-100" src={image2} alt="Second slide" />
+          <img  className="d-block w-100" src={image2} alt="Second slide" />
 
           <Carousel.Caption>
-            <h3>Second slide label</h3>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <h3>ТОП-команда сотрудников!</h3>
+            <p>В нашем организации работают люди с многолетним стажом</p>
           </Carousel.Caption>
         </Carousel.Item>
         <Carousel.Item className="home-slides">
           <img className="d-block w-100" src={image3} alt="Third slide" />
 
           <Carousel.Caption>
-            <h3>Third slide label</h3>
+            <h3>Применение передовых технологий!</h3>
             <p>
-              Praesent commodo cursus magna, vel scelerisque nisl consectetur.
+            Использование разработок, признанных мировыми компаниями
             </p>
           </Carousel.Caption>
         </Carousel.Item>
       </Carousel>
       <Container>
+        <h2 className="mt-5">Статьи и новости</h2>
         <Row className="mb-2 mt-5">
           {news.map((post, index) => {
             return (
@@ -70,7 +76,7 @@ function Home(props) {
                   <Col className="col-auto d-none d-lg-block">
                     <img
                       style={{ zIndex: "100" }}
-                      width="200"
+                      width="250"
                       height="250"
                       src={props.fixImageUrl(post.picture)}
                       alt="Not found"

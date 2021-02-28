@@ -4,19 +4,29 @@ import axios from "../axios";
 
 function Post(props) {
   const pk = props.match.params.postId;
-  const [post, setPost] = useState({picture:""});
-    console.log(post.picture)
-  async function getPost() {
+  const [post, setPost] = useState({ picture: "" });
+
+  const getPost = async () => {
     const req = await axios.get(`get-post/${pk}`);
     setPost(req.data);
   }
 
-  useEffect(() => getPost(), []);
+  const loader = () => {
+    props.showLoader();
+    getPost().then(() => props.hideLoader());
+  };
+
+  useEffect(() => loader(), []);
 
   return (
     <div>
       <Container>
-        <img className="mt-4" height="500" src={props.fixImageUrl(post.picture)} />
+        <img
+          className="mt-4"
+          height="500"
+          alt="Not Found"
+          src={props.fixImageUrl(post.picture)}
+        />
         <h4 className="mt-4">{post.title}</h4>
         <p className="services-description">{post.text}</p>
       </Container>

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "../axios";
-import { Card, Form, Button, Col, Collapse } from "react-bootstrap";
+import { Card, Form, Button, Col } from "react-bootstrap";
 import "./Reviews.css";
 import ReactAlert from "../includes/ReactAlert";
 
-function Reviews() {
+function Reviews(props) {
   const [reviews, setReviews] = useState([]);
   const [newReview, setNewReview] = useState({
     author: "",
@@ -14,10 +14,17 @@ function Reviews() {
     errorMsg: { title: "", text: "" },
   });
 
-  async function fetchNews() {
+  const fetchReviews = async () => {
     const req = await axios.get("reviews-create-list");
     setReviews(req.data);
   }
+
+  const loader = () => {
+    props.showLoader();
+    fetchReviews().then(() => props.hideLoader());
+  };
+
+  useEffect(() => loader(), []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -29,8 +36,15 @@ function Reviews() {
   const submitReview = (e) => {
     e.preventDefault();
 
+    const csrftoken = props.getCookie("csrftoken");
+    const config = {
+      headers: {
+        "X-CSRFToken": csrftoken,
+      },
+    };
+
     axios
-      .post("reviews-create-list/", newReview)
+      .post("reviews-create-list/", newReview, config)
       .then((res) => {
         if (res.statusText === "Created") {
           setNewReview((prevValues) => {
@@ -64,16 +78,14 @@ function Reviews() {
       .catch((err) => console.log(err));
   };
 
-  useEffect(() => fetchNews(), []);
-
   return (
     <div className="container">
       <h4 className="mb-5 mt-3">
         <strong>Отзывы</strong>
       </h4>
-      {reviews.map((review, index) => {
+      {reviews.map((review) => {
         return (
-          <Card key={index} className="mb-3">
+          <Card key={review.pk} className="mb-3">
             <Card.Header>{review.author}</Card.Header>
             <Card.Body>
               <blockquote className="blockquote mb-0">
@@ -87,7 +99,7 @@ function Reviews() {
         );
       })}
 
-      <Form className="mr-10 ml-10" onSubmit={submitReview}>
+      <Form className="reviews-form" onSubmit={submitReview}>
         <h5 className="form-title">Оставьте свой отзыв здесь</h5>
         <Form.Row>
           <Form.Group as={Col} md="12">

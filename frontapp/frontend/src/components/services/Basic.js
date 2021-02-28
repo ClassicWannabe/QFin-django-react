@@ -1,14 +1,17 @@
 import React, { useState } from "react";
 import { Container, Form, Button, Col } from "react-bootstrap";
 import axios from "../../axios";
+import ReactAlert from "../../includes/ReactAlert";
 import "./Basic.css";
 
-function Basic() {
+function Basic(props) {
   const [application, setApplication] = useState({
     name: "",
     email: "",
     text: "",
     type: "B",
+    successMsg: { title: "", text: "" },
+    errorMsg: { title: "", text: "" },
   });
 
   const [agreement, setAgreement] = useState(false);
@@ -43,9 +46,40 @@ function Basic() {
       service_type: application.type,
     };
 
+    const csrftoken = props.getCookie("csrftoken");
+    const config = {
+      headers: {
+        "X-CSRFToken": csrftoken,
+      },
+    };
+
     axios
-      .post("service/", params)
-      .then((res) => console.log(res))
+      .post("service/", params, config)
+      .then((res) => {
+        if (res.statusText === "Created") {
+          setApplication((prevValues) => {
+            return {
+              ...prevValues,
+              successMsg: {
+                title: "Ваш запрос был отправлен успешно",
+                text:
+                  "Мы постараемся связаться с Вами как можно скорее. Спасибо за терпение!",
+              },
+            };
+          });
+        } else {
+          setApplication((prevValues) => {
+            return {
+              ...prevValues,
+              errorMsg: {
+                title: "Что-то пошло не так...",
+                text:
+                  "Попробуйте повторить отправку или сделайте ее позже. Благодарю за понимание!",
+              },
+            };
+          });
+        }
+      })
       .then(() => {
         setAgreement(false);
         setApplication((prevValues) => {
@@ -90,6 +124,34 @@ function Basic() {
         <Form onSubmit={submitApplication}>
           <h4>Оформить заявку</h4>
           <Form.Row>
+            <Form.Group as={Col} md="12">
+              {application.successMsg.title !== "" ? (
+                <ReactAlert
+                  message={application}
+                  setSuccess={() =>
+                    setApplication((prevValues) => {
+                      return {
+                        ...prevValues,
+                        successMsg: { title: "", text: "" },
+                      };
+                    })
+                  }
+                />
+              ) : null}
+              {application.errorMsg.title !== "" ? (
+                <ReactAlert
+                  message={application}
+                  setError={() =>
+                    setApplication((prevValues) => {
+                      return {
+                        ...prevValues,
+                        errorMsg: { title: "", text: "" },
+                      };
+                    })
+                  }
+                />
+              ) : null}
+            </Form.Group>
             <Form.Group as={Col} md="3" controlId="formBasicName">
               <Form.Control
                 type="text"

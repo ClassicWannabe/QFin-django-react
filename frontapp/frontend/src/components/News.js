@@ -2,17 +2,31 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Row, Col, Card } from "react-bootstrap";
 import axios from "../axios";
+import ReactPagination from "../includes/ReactPagination";
+import "./News.css"
 
 function News(props) {
   const [news, setNews] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [postsPerPage] = useState(3);
 
-  async function fetchNews() {
+  const fetchNews = async () => {
     const req = await axios.get("news-list");
     setNews(req.data);
-  }
-  console.log(news);
+  };
 
-  useEffect(() => fetchNews(), []);
+  const loader = () => {
+    props.showLoader();
+    fetchNews().then(() => props.hideLoader());
+  };
+
+  useEffect(() => loader(), []);
+
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = news.slice(indexOfFirstPost, indexOfLastPost);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <div>
@@ -22,15 +36,15 @@ function News(props) {
             <strong>Последние новости</strong>
           </h4>
           <Row>
-            {news.map((post, index) => {
+            {currentPosts.map((post) => {
               return (
                 <Col
-                  key={index}
+                  key={post.pk}
                   lg="4"
                   md="12"
                   className="col-lg-4 col-md-12 mb-4"
                 >
-                  <Card>
+                  <Card style={{height:"400px"}}>
                     <div
                       className="bg-image hover-overlay ripple"
                       data-mdb-ripple-color="light"
@@ -54,7 +68,7 @@ function News(props) {
                     <Card.Body>
                       <Card.Title>{post.title}</Card.Title>
                       <Card.Text>{props.truncateText(post.text)}</Card.Text>
-                      <Link to={"news/" + post.pk} className="btn btn-primary">
+                      <Link to={"news/" + post.pk} className="news-button btn btn-primary">
                         Читать
                       </Link>
                     </Card.Body>
@@ -63,42 +77,13 @@ function News(props) {
               );
             })}
           </Row>
+          <ReactPagination
+            postsPerPage={postsPerPage}
+            totalPosts={news.length}
+            paginate={paginate}
+            active={currentPage}
+          />
         </section>
-
-        {/* <nav className="my-4" aria-label="...">
-          <ul className="pagination pagination-circle justify-content-center">
-            <li className="page-item">
-              <a
-                className="page-link"
-                href="#"
-                tabIndex="-1"
-                aria-disabled="true"
-              >
-                Previous
-              </a>
-            </li>
-            <li className="page-item">
-              <a className="page-link" href="#">
-                1
-              </a>
-            </li>
-            <li className="page-item active" aria-current="page">
-              <a className="page-link" href="#">
-                2 <span className="sr-only">(current)</span>
-              </a>
-            </li>
-            <li className="page-item">
-              <a className="page-link" href="#">
-                3
-              </a>
-            </li>
-            <li className="page-item">
-              <a className="page-link" href="#">
-                Next
-              </a>
-            </li>
-          </ul>
-        </nav> */}
       </div>
     </div>
   );

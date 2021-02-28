@@ -2,6 +2,7 @@ import React from "react";
 import './ReactFooter.css'
 import logo from "../images/QFin.png";
 
+
 function ReactFooter() {
   return (
     <div>

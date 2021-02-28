@@ -12,7 +12,13 @@
     width: 20px;
 }
 
+
+.contacts-info {
+    text-align: left;
+    margin-left: 10%;
+}
+
 .contacts-icon {
-    display: block;
-    margin: auto
+    margin-left: 50%
+    
 }

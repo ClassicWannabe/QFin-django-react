@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Alert, Button } from "react-bootstrap";
+import React from "react";
+import { Alert } from "react-bootstrap";
 
 function ReactAlert(props) {
   if (props.message.successMsg.title !== "") {

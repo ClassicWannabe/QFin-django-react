@@ -1,0 +1,10 @@
+.news-button {
+    position: absolute;
+    bottom: 2%;
+    width: 100px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}

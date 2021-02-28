@@ -9,7 +9,7 @@ class NewsSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
-        fields = ('author', 'email', 'text','date')
+        fields = ('pk','author', 'email', 'text','date')
 
 class FeedbackSerializer(serializers.ModelSerializer):
     class Meta:

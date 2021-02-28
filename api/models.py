@@ -22,7 +22,7 @@ class Review(models.Model):
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.author + ': ' +self.email
+        return self.author + ': ' + self.email
     
     class Meta:
         ordering = ['-date']
@@ -35,7 +35,7 @@ class Feedback(models.Model):
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.name + ': ' +self.email
+        return self.name + ': ' + self.email
     
     class Meta:
         ordering = ['-date']
@@ -55,7 +55,7 @@ class Service(models.Model):
     service_type = models.CharField(max_length=2, choices=SERVICE_CHOICES)
 
     def __str__(self):
-        return self.name + ': ' +self.email
+        return self.name + ': ' + self.email
 
 
 
